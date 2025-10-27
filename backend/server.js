@@ -2,13 +2,19 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import fetch from "node-fetch";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import cookieParser from "cookie-parser";
 import { createClient } from 'redis';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-// import { connectDB } from "./config/db";
+import { connectDB } from "./config/db.js";
+import User from "./models/user.model.js";
 
 dotenv.config();
 
 const app = express();
+
+//Setting up Redis Client
 const client = createClient({
     username: 'default',
     password: process.env.REDIS_DB_PASSWORD,
@@ -25,13 +31,19 @@ await client.connect();
 await client.set('foo', 'bar');
 const result = await client.get('foo');
 console.log(result)  // >>> bar
+// -----------------------
 
-
+//LLM for AI Analysis we are going to use
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+  origin: "http://localhost:8080",   // your frontend origin
+  credentials: true,                 // 👈 allows cookies
+}));
 
 const extractTextFromPDF = async(pdfUrl) => {
   try{
@@ -46,6 +58,22 @@ const extractTextFromPDF = async(pdfUrl) => {
   }
 }
 
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token;
+  if(!token){
+    return res.status(401).json({ message: "No token, authorization denied" });
+  }
+
+  try{
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error("Token verification error:", error);
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+}
+
 app.get('/', (req, res) => {
     res.send("Welcome to PaperHunt");
 })
@@ -53,8 +81,124 @@ app.get('/', (req, res) => {
 // Replace with your email for Unpaywall API
 const EMAIL = "arihantsrivastava71011@gmail.com";
 
+app.post("/api/auth/signup", async(req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ success: false, message: "User already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      fullName,
+      email,
+      password: hashedPassword,
+    });
+
+    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, {
+      expiresIn: "7h",
+    });
+
+    // ✅ Store token in HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 60 * 60 * 1000, // 7 hours
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Signup successful",
+      user: { id: newUser._id, fullName: newUser.fullName, email: newUser.email },
+    });
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+})
+
+app.post("/api/auth/signin", async (req, res) => {
+  try {
+    // 🧩 Check if user already has a valid token
+    const existingToken = req.cookies.token;
+    if (existingToken) {
+      try {
+        const decoded = jwt.verify(existingToken, JWT_SECRET);
+        return res.status(200).json({
+          success: true,
+          message: "User already logged in",
+          user: { id: decoded.id },
+        });
+      } catch (err) {
+        // token invalid or expired, so continue to signin
+      }
+    }
+
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
+
+    // 🪪 Create token
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7h" });
+
+    // 🍪 Set token in HttpOnly cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 60 * 60 * 1000, // 7 hours
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: { id: user._id, fullName: user.fullName, email: user.email },
+    });
+  } catch (err) {
+    console.error("Signin error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.get("/api/auth/signout", verifyToken, (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
+    res.status(200).json({ message: "Signout successful" });
+  } catch (err) {
+    console.error("Signout error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/api/auth/validate", (req, res) => {
+  const token = req.cookies.token;
+  if(!token){
+    return res.status(200).json({ loggedIn: false });
+  }
+
+  try{
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({ loggedIn: true, user: decoded });
+  }catch(error){
+    console.error("Token validation error:", error);
+    res.status(500).json({ loggedIn: false, message: "Server Error" });
+  }
+})
+
 // API endpoint: /search?q=keyword
-app.get("/api/search", async (req, res) => {
+app.get("/api/search", verifyToken, async (req, res) => {
   try {
     const query = req.query.query;
     if (!query) return res.status(400).json({ error: "Query missing" });
@@ -97,7 +241,7 @@ app.get("/api/search", async (req, res) => {
   }
 });
 
-app.post("/api/summary", async(req, res) => {
+app.post("/api/summary", verifyToken, async(req, res) => {
   try{
     const { title, authors, pdfLink } = req.body;
     if(!title){
@@ -159,6 +303,6 @@ ${text}
 })
 
 app.listen(PORT, () => {
-    // connectDB();
+    connectDB();
     console.log(`Server is running on port ${PORT}`);
 })
