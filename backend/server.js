@@ -9,6 +9,7 @@ import { createClient } from 'redis';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { connectDB } from "./config/db.js";
 import User from "./models/user.model.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -335,6 +336,85 @@ app.get('/api/user/library/papers', verifyToken, async(req, res) => {
     console.error("Error fetching user papers: ", error);
     res.status(500).json({ success: false, error: "Failed to fetch user papers"});
   }
+})
+
+app.put('/api/user/library/paper/:pid/update', verifyToken, async(req, res) => {
+  const { pid } = req.params;
+  const { title, category, bookmark } = req.body;
+
+  if(!mongoose.Types.ObjectId.isValid(req.user.id) || !mongoose.Types.ObjectId.isValid(pid)){
+    return res.status(400).json({ success: false, message: "Invalid user ID or paper ID" });
+  }
+
+  try{
+    const user = await User.findById(req.user.id);
+    if(!user){
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    const paper = user.papers.id(pid);
+    paper.title = title;
+    paper.category = category;
+    paper.bookmark = bookmark;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Details updated"})
+  }catch(error){
+    console.error(error.message);
+    res.status(500).json({ success: false, message: "Server Error"});
+  }
+})
+
+app.delete('/api/user/library/paper/:pid/delete', verifyToken, async(req, res) => {
+  const { pid } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(req.user.id) || !mongoose.Types.ObjectId.isValid(pid)){
+    return res.status(400).json({ success: false, message: "Invalid user ID or paper ID" });
+  }
+
+  try{
+    const user = await User.findById(req.user.id);
+    const paper = user.papers.id(pid);
+    const originalLength = user.papers.length;
+
+    user.papers = user.papers.filter(p => p._id.toString() !== pid);
+
+    if(user.papers.length === originalLength){
+      return res.status(404).json({ success: false, message: "Paper not found"});
+    }
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Paper deleted successfully"});
+  }catch(error){
+    res.status(500).json({ success: false, message: "Server Error"});
+    console.error(error.message);
+  }
+})
+
+app.get('/api/user/library/search', verifyToken, async(req, res) => {
+  const { searchTerm } = req.body;
+  if(!searchTerm){
+    return res.status(400).json({ success: false, message: "Search term is required" });
+  }
+
+  try{
+    const user = await User.findById(req.user.id);
+    if(!user) return res.status(404).json({ success: false, message: "User not found" });
+    const searchResults = user.papers.filter(paper => paper.title.toLowerCase().includes(searchTerm.toLowerCase()) || paper.authors.toLowerCase().includes(searchTerm.toLowerCase()));
+    res.status(200).json({ success: true, results: searchResults }); 
+  }catch(error){
+    res.status(500).json({ success: false, message: "Server Error"});
+    console.error(error.message);
+  }
+})
+
+app.get('/api/user/libmodal/close', (req, res) => {
+  // This is a dummy endpoint to handle modal close requests
+    // It doesn't perform any action but is used to trigger the onClose function in the frontend
+    try {
+        res.status(200).json({ success: true, message: "Modal closed" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    }
 })
 
 app.listen(PORT, () => {
