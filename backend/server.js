@@ -302,6 +302,41 @@ ${text}
   }
 })
 
+app.post('/api/user/library/add', verifyToken, async(req, res) => {
+  const libPaper = req.body;
+  if(!libPaper.title || !libPaper.category || !libPaper.bookmark){  //as user only enters the title, category and the bookmark for the paper
+    return res.status(400).json({ success: false, error: "All fields are required"});
+  }
+  if(!libPaper.doi) libPaper.doi = "N/A";
+  if(!libPaper.pdfLink) libPaper.pdfLink = "N/A";
+
+  try{
+    const user = await User.findById(req.user.id);
+    if(!user){
+      return res.status(404).json({ success: false, error: "User not found. Need to login."});
+    }
+    user.papers.push(libPaper);
+    await user.save();
+    res.status(200).json({ success: true, message: "Paper added to library successfully"});
+  }catch(error){
+    console.error("Error adding paper to library: ", error);
+    res.status(500).json({ success: false, error: "Failed to add paper to library"});
+  }
+})
+
+app.get('/api/user/library/papers', verifyToken, async(req, res) => {
+  try{
+    const user = await User.findById(req.user.id);
+    if(!user){
+      return res.status(404).json({ success: false, error: "User not found. Need to login."});
+    }
+    res.status(200).json({ success: true, papers: user.papers });
+  }catch(error){
+    console.error("Error fetching user papers: ", error);
+    res.status(500).json({ success: false, error: "Failed to fetch user papers"});
+  }
+})
+
 app.listen(PORT, () => {
     connectDB();
     console.log(`Server is running on port ${PORT}`);
