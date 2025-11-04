@@ -7,22 +7,30 @@ import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import { createClient } from 'redis';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+// import RSSParser from 'rss-parser';
 import { connectDB } from "./config/db.js";
 import User from "./models/user.model.js";
 import mongoose from "mongoose";
+import Research from "./models/research.model.js";
 
 dotenv.config();
 
 const app = express();
+// const parser = new RSSParser({
+//   headers: {
+//     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+//     'Accept': 'application/rss+xml, application/xml;q=0.9, */*;q=0.8',
+//   },
+// });
 
 //Setting up Redis Client
 const client = createClient({
-    username: 'default',
-    password: process.env.REDIS_DB_PASSWORD,
-    socket: {
-        host: 'redis-13811.crce179.ap-south-1-1.ec2.redns.redis-cloud.com',
-        port: 13811
-    }
+  username: 'default',
+  password: process.env.REDIS_DB_PASSWORD,
+  socket: {
+    host: 'redis-13811.crce179.ap-south-1-1.ec2.redns.redis-cloud.com',
+    port: 13811
+  }
 });
 
 client.on('error', err => console.log('Redis Client Error', err));
@@ -46,14 +54,14 @@ app.use(cors({
   credentials: true,                 // 👈 allows cookies
 }));
 
-const extractTextFromPDF = async(pdfUrl) => {
-  try{
+const extractTextFromPDF = async (pdfUrl) => {
+  try {
     const pdf = (await import("pdf-parse")).default; // ✅ dynamic import
     const response = await fetch(pdfUrl);
     const buffer = await response.arrayBuffer();
     const data = await pdf(Buffer.from(buffer));
     return data.text.slice(0, 6000); // Limit to first 6000 characters
-  }catch(error){
+  } catch (error) {
     console.error("Error extracting PDF text: ", error);
     return null;
   }
@@ -61,11 +69,11 @@ const extractTextFromPDF = async(pdfUrl) => {
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
-  if(!token){
+  if (!token) {
     return res.status(401).json({ message: "No token, authorization denied" });
   }
 
-  try{
+  try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
@@ -76,13 +84,13 @@ const verifyToken = (req, res, next) => {
 }
 
 app.get('/', (req, res) => {
-    res.send("Welcome to PaperHunt");
+  res.send("Welcome to PaperHunt");
 })
 
 // Replace with your email for Unpaywall API
 const EMAIL = "arihantsrivastava71011@gmail.com";
 
-app.post("/api/auth/signup", async(req, res) => {
+app.post("/api/auth/signup", async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
 
@@ -185,14 +193,14 @@ app.get("/api/auth/signout", verifyToken, (req, res) => {
 
 app.get("/api/auth/validate", (req, res) => {
   const token = req.cookies.token;
-  if(!token){
+  if (!token) {
     return res.status(200).json({ loggedIn: false });
   }
 
-  try{
+  try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.status(200).json({ loggedIn: true, user: decoded });
-  }catch(error){
+  } catch (error) {
     console.error("Token validation error:", error);
     res.status(500).json({ loggedIn: false, message: "Server Error" });
   }
@@ -242,24 +250,24 @@ app.get("/api/search", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/api/summary", verifyToken, async(req, res) => {
-  try{
+app.post("/api/summary", verifyToken, async (req, res) => {
+  try {
     const { title, authors, pdfLink } = req.body;
-    if(!title){
-      return res.status(400).json({ error: "Title required"});
+    if (!title) {
+      return res.status(400).json({ error: "Title required" });
     }
 
     const cacheKey = `summary:${title}`;
     const cached = await client.get(cacheKey);
-    if(cached){
-      return res.status(200).json({ summary: cached, cached: true});
+    if (cached) {
+      return res.status(200).json({ summary: cached, cached: true });
     }
 
     let text = "";
-    if(pdfLink){
+    if (pdfLink) {
       text = await extractTextFromPDF(pdfLink);
     }
-    if(!text){
+    if (!text) {
       text = title;
     }
 
@@ -296,59 +304,59 @@ ${text}
     //Cache summary for 24 hours
     await client.set(cacheKey, summary, "EX", 86400);
 
-    res.status(200).json({ summary, cached: false});
-  }catch(error){
+    res.status(200).json({ summary, cached: false });
+  } catch (error) {
     console.error("Error in summary API: ", error);
-    res.status(500).json({ error: "Failed to generate summary"});
+    res.status(500).json({ error: "Failed to generate summary" });
   }
 })
 
-app.post('/api/user/library/add', verifyToken, async(req, res) => {
+app.post('/api/user/library/add', verifyToken, async (req, res) => {
   const libPaper = req.body;
-  if(!libPaper.title || !libPaper.category || !libPaper.bookmark){  //as user only enters the title, category and the bookmark for the paper
-    return res.status(400).json({ success: false, error: "All fields are required"});
+  if (!libPaper.title || !libPaper.category || !libPaper.bookmark) {  //as user only enters the title, category and the bookmark for the paper
+    return res.status(400).json({ success: false, error: "All fields are required" });
   }
-  if(!libPaper.doi) libPaper.doi = "N/A";
-  if(!libPaper.pdfLink) libPaper.pdfLink = "N/A";
+  if (!libPaper.doi) libPaper.doi = "N/A";
+  if (!libPaper.pdfLink) libPaper.pdfLink = "N/A";
 
-  try{
+  try {
     const user = await User.findById(req.user.id);
-    if(!user){
-      return res.status(404).json({ success: false, error: "User not found. Need to login."});
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found. Need to login." });
     }
     user.papers.push(libPaper);
     await user.save();
-    res.status(200).json({ success: true, message: "Paper added to library successfully"});
-  }catch(error){
+    res.status(200).json({ success: true, message: "Paper added to library successfully" });
+  } catch (error) {
     console.error("Error adding paper to library: ", error);
-    res.status(500).json({ success: false, error: "Failed to add paper to library"});
+    res.status(500).json({ success: false, error: "Failed to add paper to library" });
   }
 })
 
-app.get('/api/user/library/papers', verifyToken, async(req, res) => {
-  try{
+app.get('/api/user/library/papers', verifyToken, async (req, res) => {
+  try {
     const user = await User.findById(req.user.id);
-    if(!user){
-      return res.status(404).json({ success: false, error: "User not found. Need to login."});
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found. Need to login." });
     }
     res.status(200).json({ success: true, papers: user.papers });
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching user papers: ", error);
-    res.status(500).json({ success: false, error: "Failed to fetch user papers"});
+    res.status(500).json({ success: false, error: "Failed to fetch user papers" });
   }
 })
 
-app.put('/api/user/library/paper/:pid/update', verifyToken, async(req, res) => {
+app.put('/api/user/library/paper/:pid/update', verifyToken, async (req, res) => {
   const { pid } = req.params;
   const { title, category, bookmark } = req.body;
 
-  if(!mongoose.Types.ObjectId.isValid(req.user.id) || !mongoose.Types.ObjectId.isValid(pid)){
+  if (!mongoose.Types.ObjectId.isValid(req.user.id) || !mongoose.Types.ObjectId.isValid(pid)) {
     return res.status(400).json({ success: false, message: "Invalid user ID or paper ID" });
   }
 
-  try{
+  try {
     const user = await User.findById(req.user.id);
-    if(!user){
+    if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
     const paper = user.papers.id(pid);
@@ -357,67 +365,257 @@ app.put('/api/user/library/paper/:pid/update', verifyToken, async(req, res) => {
     paper.bookmark = bookmark;
     await user.save();
 
-    res.status(200).json({ success: true, message: "Details updated"})
-  }catch(error){
+    res.status(200).json({ success: true, message: "Details updated" })
+  } catch (error) {
     console.error(error.message);
-    res.status(500).json({ success: false, message: "Server Error"});
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 })
 
-app.delete('/api/user/library/paper/:pid/delete', verifyToken, async(req, res) => {
+app.delete('/api/user/library/paper/:pid/delete', verifyToken, async (req, res) => {
   const { pid } = req.params;
 
-  if(!mongoose.Types.ObjectId.isValid(req.user.id) || !mongoose.Types.ObjectId.isValid(pid)){
+  if (!mongoose.Types.ObjectId.isValid(req.user.id) || !mongoose.Types.ObjectId.isValid(pid)) {
     return res.status(400).json({ success: false, message: "Invalid user ID or paper ID" });
   }
 
-  try{
+  try {
     const user = await User.findById(req.user.id);
     const paper = user.papers.id(pid);
     const originalLength = user.papers.length;
 
     user.papers = user.papers.filter(p => p._id.toString() !== pid);
 
-    if(user.papers.length === originalLength){
-      return res.status(404).json({ success: false, message: "Paper not found"});
+    if (user.papers.length === originalLength) {
+      return res.status(404).json({ success: false, message: "Paper not found" });
     }
     await user.save();
 
-    res.status(200).json({ success: true, message: "Paper deleted successfully"});
-  }catch(error){
-    res.status(500).json({ success: false, message: "Server Error"});
+    res.status(200).json({ success: true, message: "Paper deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
     console.error(error.message);
   }
 })
 
-app.get('/api/user/library/search', verifyToken, async(req, res) => {
+app.get('/api/user/library/search', verifyToken, async (req, res) => {
   const { searchTerm } = req.body;
-  if(!searchTerm){
+  if (!searchTerm) {
     return res.status(400).json({ success: false, message: "Search term is required" });
   }
 
-  try{
+  try {
     const user = await User.findById(req.user.id);
-    if(!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
     const searchResults = user.papers.filter(paper => paper.title.toLowerCase().includes(searchTerm.toLowerCase()) || paper.authors.toLowerCase().includes(searchTerm.toLowerCase()));
-    res.status(200).json({ success: true, results: searchResults }); 
-  }catch(error){
-    res.status(500).json({ success: false, message: "Server Error"});
+    res.status(200).json({ success: true, results: searchResults });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
     console.error(error.message);
   }
 })
 
 app.get('/api/user/libmodal/close', (req, res) => {
   // This is a dummy endpoint to handle modal close requests
-    // It doesn't perform any action but is used to trigger the onClose function in the frontend
-    try {
-        res.status(200).json({ success: true, message: "Modal closed" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Server Error", error: error.message });
-    }
+  // It doesn't perform any action but is used to trigger the onClose function in the frontend
+  try {
+    res.status(200).json({ success: true, message: "Modal closed" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+  }
 })
 
+app.post('/api/hots/research-opportunites/add', verifyToken, async (req, res) => {
+  const { title, description, skillsRequired, membersNeeded, duration, status, reachoutemail } = req.body;
+  if (!title || !description || !skillsRequired || !membersNeeded || !duration || !status || !reachoutemail) {
+    return res.status(400).json({ success: false, message: "All fields are required " });
+  }
+
+  try {
+    const opp = {
+      title,
+      description,
+      skillsRequired: Array.isArray(skillsRequired) ? skillsRequired : [skillsRequired],
+      membersNeeded,
+      membersJoined: [],
+      duration,
+      status: status || 'open',
+      reachoutemail,
+      createdBy: req.user.id,
+    };
+    await Research.create(opp);
+
+
+    return res.status(201).json({ success: true, message: "Opportunity added successfully !", research: opp });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+})
+
+app.get('/api/hots/research-opportunities/get', verifyToken, async(req, res) => {
+  try{
+    const results = await Research.find({}).sort({ createdAt: -1 }); //to get all research opportunites available 
+    return res.status(200).json({ success: true, results: results , message: "opportunites fetched!" });
+  }catch(error){
+    console.error(error.message);
+    return res.status(500).json({ success: false, message: "Server Error" });
+  }
+})
+
+app.get("/api/hots/news", async(req, res) => {
+  try {
+    const apiKey = process.env.NEWS_API_KEY; // get your key from newsapi.org
+    const url = `https://newsapi.org/v2/everything?q=research+science+technology&language=en&pageSize=6&apiKey=${apiKey}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (!data.articles) return res.status(404).json({ success: false, message: "No news found" });
+
+    const formatted = data.articles.map(a => ({
+      title: a.title,
+      description: a.description,
+      image: a.urlToImage,
+      url: a.url,
+      source: a.source.name,
+      publishedAt: a.publishedAt,
+    }));
+
+    return res.status(200).json({ success: true, news: formatted });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ success: false, message: "Server error fetching news" });
+  }
+});
+
+//not working
+// app.get('/api/hots/academic-research-news', async (req, res) => {
+//   try {
+//     const feeds = [
+//       'https://www.sciencedaily.com/rss/all.xml',
+//       'https://www.nature.com/nature/articles?type=research&format=rss',
+//       'https://news.mit.edu/rss/research'
+//     ];
+
+//     const allItems = [];
+
+//     for (const feed of feeds) {
+//       const data = await parser.parseURL(feed);
+//       data.items.slice(0, 5).forEach(item => {
+//         allItems.push({
+//           title: item.title,
+//           link: item.link,
+//           description: item.contentSnippet || item.content || '',
+//           pubDate: item.pubDate,
+//           source: data.title,
+//           image: item.enclosure?.url || null
+//         });
+//       });
+//     }
+
+//     allItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Fetched latest research news successfully',
+//       news: allItems.slice(0, 10),
+//     });
+//   } catch (error) {
+//     console.error('Error fetching RSS feeds:', error);
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Failed to fetch research news',
+//     });
+//   }
+// });
+
+const RSS_FEEDS = [
+  "https://www.nature.com/nature/articles?type=research&format=rss",
+  "https://www.sciencedaily.com/rss/top/science.xml",
+  "https://rss.sciencedirect.com/publication/science",
+];
+
+const FALLBACK_NEWS = [
+  {
+    title: "AI Models Boost Climate Forecast Accuracy",
+    link: "https://example.com/ai-climate-forecast",
+    description: "Recent studies show deep learning models improving climate predictions by up to 40%.",
+    pubDate: "2025-10-25",
+    source: "Fallback Research News",
+  },
+  {
+    title: "Quantum Computing Advances Drug Discovery",
+    link: "https://example.com/quantum-drug-discovery",
+    description: "Researchers use quantum simulations to accelerate new molecule designs.",
+    pubDate: "2025-10-22",
+    source: "Fallback Research News",
+  },
+  {
+    title: "New Material Offers 10x Battery Efficiency",
+    link: "https://example.com/new-battery-material",
+    description: "A novel graphene-titanium compound shows promise for high-density energy storage.",
+    pubDate: "2025-10-20",
+    source: "Fallback Research News",
+  },
+];
+
+app.get("/api/hots/academic-research-news", async (req, res) => {
+  try {
+    const allFeeds = [];
+
+    for (const feed of RSS_FEEDS) {
+      try {
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`;
+        const response = await fetch(proxyUrl);
+
+        if (!response.ok) {
+          console.warn(`⚠️ Failed to fetch RSS feed: ${feed} (status ${response.status})`);
+          continue;
+        }
+
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+          const simplified = data.items.slice(0, 5).map((item) => ({
+            title: item.title,
+            link: item.link,
+            description: item.description,
+            pubDate: item.pubDate,
+            source: data.feed?.title || "Research Feed",
+          }));
+
+          allFeeds.push(...simplified);
+        }
+      } catch (err) {
+        console.warn(`⚠️ RSS feed error for ${feed}:`, err.message);
+      }
+    }
+
+    if (allFeeds.length === 0) {
+      console.log("⚠️ All RSS feeds failed — returning fallback news.");
+      return res.status(200).json({
+        success: true,
+        source: "fallback",
+        results: FALLBACK_NEWS,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      source: "rss",
+      results: allFeeds,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching RSS feeds:", error);
+    return res.status(200).json({
+      success: true,
+      source: "fallback",
+      results: FALLBACK_NEWS,
+    });
+  }
+});
+
 app.listen(PORT, () => {
-    connectDB();
-    console.log(`Server is running on port ${PORT}`);
+  connectDB();
+  console.log(`Server is running on port ${PORT}`);
 })
