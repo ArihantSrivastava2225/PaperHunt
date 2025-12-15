@@ -5,6 +5,10 @@ const paperSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    authors: {
+        type: [String],
+        default: [],
+    },
     category: {
         type: String,
         required: true,
@@ -40,8 +44,8 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     papers: [paperSchema],
-}, { 
-    timestamps: true ,
+}, {
+    timestamps: true,
 })
 
 const User = mongoose.model("User", userSchema);

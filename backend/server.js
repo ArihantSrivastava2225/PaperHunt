@@ -331,6 +331,7 @@ app.post('/api/user/library/add', verifyToken, async (req, res) => {
   }
   if (!libPaper.doi) libPaper.doi = "N/A";
   if (!libPaper.pdfLink) libPaper.pdfLink = "N/A";
+  if (!libPaper.authors) libPaper.authors = [];
 
   try {
     const user = await User.findById(req.user.id);
@@ -376,6 +377,7 @@ app.put('/api/user/library/paper/:pid/update', verifyToken, async (req, res) => 
     paper.title = title;
     paper.category = category;
     paper.bookmark = bookmark;
+    if (req.body.authors) paper.authors = req.body.authors; // Optional: Allow updating authors
     await user.save();
 
     res.status(200).json({ success: true, message: "Details updated" })
