@@ -5,10 +5,10 @@ dotenv.config();
 
 const client = createClient({
     username: 'default',
-    password: '9ymMqfIa85i7mJgleTwgedkFsZUupLk3',
+    password: process.env.REDIS_DB_PASSWORD,
     socket: {
-        host: 'redis-17490.crce217.ap-south-1-1.ec2.cloud.redislabs.com',
-        port: 17490
+        host: process.env.REDIS_URL,
+        port: process.env.REDIS_PORT,
     }
 });
 

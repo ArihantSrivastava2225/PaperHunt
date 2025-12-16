@@ -19,8 +19,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:8080",   // your frontend origin
-  credentials: true,                 // 👈 allows cookies
+  origin: "http://localhost:8080",   // frontend origin
+  credentials: true,                 // allows cookies
 }));
 
 app.get('/', (req, res) => {
