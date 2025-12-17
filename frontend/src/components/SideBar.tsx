@@ -16,6 +16,7 @@ const SideBar = () => {
     { name: "Hots", icon: <Flame />, path: "/hots" },
     { name: "Opportunities", icon: <Briefcase />, path: "/research-opportunities" },
     { name: "About", icon: <Info />, path: "/about" },
+    { name: "Contact", icon: <Menu />, path: "/contact" },
   ];
 
   const handleSignOut = async () => {
