@@ -128,6 +128,11 @@ ${text}
 `;
 
         const result = await model.generateContent(prompt);
+
+        if (!result || !result.response) {
+            throw new Error("No response from AI model");
+        }
+
         const summary = result.response.text();
 
         //Cache summary for 24 hours

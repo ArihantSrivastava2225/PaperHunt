@@ -1,0 +1,164 @@
+# Project Report: PaperHunt
+
+**Version:** 1.0  
+**Date:** 2025-12-17
+
+---
+
+## 1. Software Requirements Specification (SRS)
+
+### 1.1 Introduction
+**PaperHunt** is a full-stack web application designed to democratize access to academic research. It enables users to search for research papers, generate AI-powered summaries, manage a personal library, and connect with research opportunities.
+
+### 1.2 Functional Requirements
+
+#### Authentication & User Management
+*   **FR-01: Signup**: Users must be able to register with Full Name, Email, and Password.
+*   **FR-02: Signin**: Users must be able to authenticate using Email and Password. Successful login returns a JWT in a secure HTTP-only cookie.
+*   **FR-03: Signout**: authenticated users can log out, clearing the session cookie.
+*   **FR-04: Session Persistence**: The system must validate the token on page load to maintain user sessions.
+
+#### Research Paper Management
+*   **FR-05: Search**: Users can search for papers via external APIs (OpenAlex) using keywords.
+*   **FR-06: Library Management**: Users can add papers to their personal library with custom bookmarks and categories.
+*   **FR-07: Library CRUD**: Users can view, update details (category/bookmark), and remove papers from their library.
+*   **FR-08: Filter**: Users can filter their library papers by title or author.
+
+#### AI Features
+*   **FR-09: Summarization**: The system uses Google Gemini to generate structured summaries (Introduction, Findings, etc.) for selected papers.
+*   **FR-10**: Summaries should be cached in Redis to improve performance.
+
+#### Research Opportunities
+*   **FR-11: Create Opportunity**: Authenticated users can post research collaboration opportunities (Title, Description, Skills, Duration).
+*   **FR-12: View Opportunities**: Users can browse a list of active research opportunities.
+
+### 1.3 Non-Functional Requirements
+*   **Security**: Passwords must be hashed (bcrypt). API routes must be protected via JWT authentication.
+*   **Performance**: Redis caching should be used to minimize repeated AI API calls.
+*   **Usability**: The frontend should be responsive and user-friendly (React-based).
+*   **Reliability**: The system should gracefully handle external API failures (OpenAlex, Gemini).
+
+---
+
+## 2. Software Design Document (SDD)
+
+### 2.1 System Architecture
+PaperHunt utilizes a **MERN Stack** (MongoDB, Express.js, React, Node.js) with a **Client-Server** architecture.
+
+*   **Frontend**: React Single Page Application (SPA) utilizing Vite for build tooling. Handles UI rendering and state management.
+*   **Backend**: Node.js/Express REST API. Handles business logic, authentication, and external API communication.
+*   **Database**: MongoDB (NoSQL) for storing user data, libraries, and opportunities.
+*   **Cache**: Redis key-value store for caching AI-generated summaries.
+
+### 2.2 Database Schema Design
+
+#### Users Collection (`users`)
+Stores user account information and their personal library (embedded document pattern).
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `_id` | ObjectId | Unique identifier |
+| `fullName` | String | User's full name |
+| `email` | String | Unique email address |
+| `password` | String | Hashed password |
+| `papers` | Array | Embedded array of Paper objects |
+| `createdAt` | Date | Timestamp |
+
+**Paper Schema (Embedded in User)**
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `title` | String | Title of the paper |
+| `authors` | Array[String] | List of authors |
+| `category` | String | User-assigned category |
+| `bookmark` | String | User-assigned bookmark/tag |
+| `doi` | String | Digital Object Identifier |
+| `pdfLink` | String | Direct link to PDF |
+
+#### Research Collection (`research`)
+Stores research opportunities posted by users.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `_id` | ObjectId | Unique identifier |
+| `title` | String | Title of the opportunity |
+| `description` | String | Detailed description |
+| `skillsRequired` | Array[String] | List of required skills |
+| `membersNeeded` | Number | Count of members needed |
+| `status` | String | 'open' or 'closed' |
+| `createdBy` | ObjectId | Ref to `User` |
+
+### 2.3 API Design (Key Endpoints)
+
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/signup` | Register a new user | No |
+| `POST` | `/api/auth/signin` | Log in a user | No |
+| `POST` | `/api/user/add` | Add paper to library | Yes |
+| `GET` | `/api/user/library` | Get user's library | Yes |
+| `PATCH` | `/api/user/update/:pid` | Update paper details | Yes |
+| `DELETE` | `/api/user/delete/:pid` | Remove paper from library | Yes |
+
+---
+
+## 3. Test Cases
+
+### 3.1 Decision Table Testing
+**Function Under Test:** [signin](file:///c:/Users/hp/OneDrive/Desktop/projects/AI-mixed/PaperHunt/PaperHunt/backend/controllers/auth.controller.js#50-97) (Auth Controller)
+
+**Logic:**
+1.  Check if token already exists in cookies.
+2.  If no token, check if email/password provided.
+3.  Check if user exists in Database.
+4.  Check if password matches hash.
+
+| Condition | Use Case 1 | Use Case 2 | Use Case 3 | Use Case 4 | Use Case 5 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Valid Token in Cookie? | Yes | No | No | No | No |
+| Email Provided? | N/A | No | Yes | Yes | Yes |
+| Password Provided? | N/A | No | No | Yes | Yes |
+| User Exists in DB? | N/A | N/A | N/A | No | Yes |
+| Password Matches? | N/A | N/A | N/A | N/A | No |
+| **Action / Result** | **Auto-Login** | **Error 400** | **Error 400** | **Error 400** | **Error 400** |
+
+**Use Case 6 (Success):** No Token, Email Provided, Password Provided, User Exists, Password Matches -> **Success 200 (New Token)**.
+
+### 3.2 Robust Testing
+**Function Under Test:** [addPaperToLibrary](file:///c:/Users/hp/OneDrive/Desktop/projects/AI-mixed/PaperHunt/PaperHunt/backend/controllers/library.controller.js#4-26) (Library Controller)
+**Objective:** Verify system behavior under invalid or unexpected input conditions.
+
+| Test ID | Description | Input Data | Expected Output |
+| :--- | :--- | :--- | :--- |
+| **RB-01** | Missing Title | `{ category: "AI", bookmark: "read" }` | `400 Bad Request` ("All fields are required") |
+| **RB-02** | Missing Category | `{ title: "Paper 1", bookmark: "read" }` | `400 Bad Request` ("All fields are required") |
+| **RB-03** | Missing Bookmark | `{ title: "Paper 1", category: "AI" }` | `400 Bad Request` ("All fields are required") |
+| **RB-04** | Missing Optional Fields | `{ title: "P1", category: "C1", bookmark: "B1" }` | `200 OK` (Defaults: DOI="N/A", PDF="N/A", Authors=[]) |
+| **RB-05** | Unauthorized User | `{ title: "P1"... }` (No JWT) | `401/500` (Middleware rejection or User Not Found) |
+| **RB-06** | Malformed JSON | `{"title": "P1", "category": ...` (Unclosed brace) | `400 Bad Request` (Express JSON parser error) |
+
+### 3.3 Equivalence Class Testing
+**Function Under Test:** [signup](file:///c:/Users/hp/OneDrive/Desktop/projects/AI-mixed/PaperHunt/PaperHunt/backend/controllers/auth.controller.js#11-49) (Auth Controller)
+**Fields:** `email`, `password`
+
+**Class Partitions:**
+
+| Input | Valid Equivalence Class | Invalid Equivalence Class |
+| :--- | :--- | :--- |
+| **Email** | Valid format (`test@example.com`) | Missing (`null`), Empty (`""`), No domain (`test@`), No user (`@example.com`) |
+| **Password** | Non-empty string | Missing (`null`), Empty (`""`) |
+| **User State** | New User (Email not in DB) | Existing User (Email already in DB) |
+
+**Test Cases:**
+1.  **Valid**: `user="new", email="valid@test.com", pass="123"` -> **201 Created**.
+2.  **Invalid Email**: `user="new", email="invalid", pass="123"` -> **400 Bad Request** (if validation exists) or DB Error.
+3.  **Existing User**: `user="exists", email="duplicate@test.com", pass="123"` -> **400 Bad Request** ("User already exists").
+4.  **Empty Password**: `user="new", email="valid@test.com", pass=""` -> **400 Bad Request**.
+
+### 3.4 Worst Case Testing
+**Function Under Test:** [addPaperToLibrary](file:///c:/Users/hp/OneDrive/Desktop/projects/AI-mixed/PaperHunt/PaperHunt/backend/controllers/library.controller.js#4-26) / [getLibraryPapers](file:///c:/Users/hp/OneDrive/Desktop/projects/AI-mixed/PaperHunt/PaperHunt/backend/controllers/library.controller.js#27-39)
+**Objective:** Test system interaction at upper limits.
+
+| Test ID | Description | Scenario | Expected Behavior |
+| :--- | :--- | :--- | :--- |
+| **WC-01** | Database Capacity (Doc Size) | User adds 10,000 papers to their library array. | MongoDB max document size (16MB) might be approached. System should handle or pagination should be implemented (currently full array fetch). **Risk: Slow API response.** |
+| **WC-02** | Network Latency | [addPaper](file:///c:/Users/hp/OneDrive/Desktop/projects/AI-mixed/PaperHunt/PaperHunt/backend/controllers/library.controller.js#4-26) called with massive title string (e.g., 1MB text). | Server accepts or rejects based on body-parser limits. DB might reject if string is too long (though String type is flexible). |
+| **WC-03** | Concurrent Writes | User sends 100 [addPaper](file:///c:/Users/hp/OneDrive/Desktop/projects/AI-mixed/PaperHunt/PaperHunt/backend/controllers/library.controller.js#4-26) requests simultaneously. | MongoDB handles locking. Verify no race conditions lead to lost data or corrupted array. |
