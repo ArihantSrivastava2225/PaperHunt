@@ -24,9 +24,7 @@ app.use(cors({
   credentials: true,                 // allows cookies
 }));
 
-app.get('/', (req, res) => {
-  res.send("Welcome to PaperHunt");
-});
+
 
 // Routes
 app.use("/api/auth", authRoutes);
