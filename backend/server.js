@@ -11,6 +11,7 @@ import libraryRoutes from "./routes/library.routes.js";
 import hotsRoutes from "./routes/hots.routes.js";
 import scoutRoutes from "./routes/scout.routes.js";
 import paperRoutes from "./routes/paper.routes.js";
+import mailRoutes from "./routes/mail.routes.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", libraryRoutes);
 app.use("/api/hots", hotsRoutes);
 app.use("/api/scout", scoutRoutes);
+app.use("/api/mail", mailRoutes);
 app.use("/api", paperRoutes);
 
 if (process.env.NODE_ENV === "production") {
