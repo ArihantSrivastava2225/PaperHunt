@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Cosmic color palette - deep space theme */
+    --background: 240 30% 3%;
+    --foreground: 210 100% 95%;
+
+    /* Glassmorphic cards */
+    --card: 240 25% 8%;
+    --card-foreground: 210 100% 95%;
+    --card-glass: 240 30% 12%;
+
+    --popover: 240 25% 8%;
+    --popover-foreground: 210 100% 95%;
+
+    /* Electric cyan - primary glow */
+    --primary: 189 100% 60%;
+    --primary-foreground: 240 30% 3%;
+    --primary-glow: 189 100% 70%;
+
+    /* Deep purple - secondary cosmic accent */
+    --secondary: 270 70% 60%;
+    --secondary-foreground: 210 100% 95%;
+    --secondary-glow: 280 80% 70%;
+
+    --muted: 240 20% 15%;
+    --muted-foreground: 210 30% 65%;
+
+    /* Violet accent for AI elements */
+    --accent: 270 70% 60%;
+    --accent-foreground: 210 100% 95%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 100% 95%;
+
+    --border: 240 20% 20%;
+    --input: 240 20% 15%;
+    --ring: 189 100% 60%;
+
+    --radius: 1rem;
+
+    /* Gradients */
+    --gradient-cosmic: linear-gradient(135deg, hsl(240, 30%, 3%) 0%, hsl(260, 40%, 8%) 50%, hsl(280, 30%, 10%) 100%);
+    --gradient-nebula: linear-gradient(180deg, hsl(240, 30%, 3%) 0%, hsl(270, 50%, 10%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(240, 30%, 12%, 0.6) 0%, hsla(270, 40%, 15%, 0.4) 100%);
+    
+    /* Glow effects */
+    --glow-cyan: 0 0 20px hsla(189, 100%, 60%, 0.5), 0 0 40px hsla(189, 100%, 60%, 0.3);
+    --glow-purple: 0 0 20px hsla(270, 70%, 60%, 0.5), 0 0 40px hsla(270, 70%, 60%, 0.3);
+    --glow-soft: 0 8px 32px hsla(189, 100%, 60%, 0.15);
+    
+    /* Typography */
+    --font-heading: 'Orbitron', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    background: var(--gradient-cosmic);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  /* Glassmorphism utilities */
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsla(240, 30%, 30%, 0.3);
+  }
+
+  .glass-card {
+    background: hsla(240, 25%, 8%, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsla(189, 100%, 60%, 0.2);
+  }
+
+  /* Glow effects */
+  .glow-cyan {
+    box-shadow: var(--glow-cyan);
+  }
+
+  .glow-purple {
+    box-shadow: var(--glow-purple);
+  }
+
+  .glow-soft {
+    box-shadow: var(--glow-soft);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 20px hsla(189, 100%, 60%, 0.6), 0 0 40px hsla(189, 100%, 60%, 0.4);
+  }
+
+  .text-glow-purple {
+    text-shadow: 0 0 20px hsla(270, 70%, 60%, 0.6), 0 0 40px hsla(270, 70%, 60%, 0.4);
+  }
+
+  /* Holographic border effect */
+  .holographic-border {
+    position: relative;
+    background: linear-gradient(135deg, 
+      hsla(189, 100%, 60%, 0.2) 0%, 
+      hsla(270, 70%, 60%, 0.2) 50%,
+      hsla(189, 100%, 60%, 0.2) 100%
+    );
+    border-radius: var(--radius);
+  }
+
+  .holographic-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    padding: 2px;
+    background: linear-gradient(135deg, 
+      hsl(189, 100%, 60%), 
+      hsl(270, 70%, 60%),
+      hsl(189, 100%, 60%)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+}
+
+@layer components {
+  /* Animated stars background */
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px hsla(189, 100%, 60%, 0.3); }
+    50% { box-shadow: 0 0 40px hsla(189, 100%, 60%, 0.6); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  .animate-twinkle {
+    animation: twinkle 3s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s linear infinite;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsla(189, 100%, 60%, 0.3),
+      transparent
+    );
+    background-size: 1000px 100%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
