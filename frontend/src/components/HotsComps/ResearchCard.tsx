@@ -10,6 +10,7 @@ interface ResearchCardProps {
   duration: string;
   status: string;
   createdByEmail: string;
+  stipend?: string;
 }
 
 const ResearchCard: React.FC<ResearchCardProps> = ({
@@ -20,7 +21,8 @@ const ResearchCard: React.FC<ResearchCardProps> = ({
   membersJoined,
   duration,
   status,
-  createdByEmail
+  createdByEmail,
+  stipend
 }) => {
   const openMail = () => {
     window.location.href = `mailto:${createdByEmail}?subject=Interest in ${title}`;
@@ -50,16 +52,20 @@ const ResearchCard: React.FC<ResearchCardProps> = ({
           <span className="flex items-center gap-1">
             <Clock size={14} /> {duration}
           </span>
+          {stipend && (
+            <span className="flex items-center gap-1 text-green-600 font-medium">
+              💰 {stipend}
+            </span>
+          )}
         </div>
       </div>
 
       <div className="mt-5 flex items-center justify-between">
         <span
-          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            status === "open"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-600"
-          }`}
+          className={`px-3 py-1 rounded-full text-xs font-semibold ${status === "open"
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-600"
+            }`}
         >
           {status.toUpperCase()}
         </span>

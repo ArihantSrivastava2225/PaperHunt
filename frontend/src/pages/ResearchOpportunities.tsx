@@ -17,6 +17,8 @@ interface Research {
     duration: string;
     status: string;
     createdBy: { email: string };
+    reachoutemail: string;
+    stipend?: string;
 }
 
 const ResearchOpportunities: React.FC = () => {
@@ -113,7 +115,8 @@ const ResearchOpportunities: React.FC = () => {
                                     membersJoined={r.membersJoined.length}
                                     duration={r.duration}
                                     status={r.status}
-                                    createdByEmail={r.createdBy?.email} // Check if createdBy exists
+                                    createdByEmail={r.reachoutemail}
+                                    stipend={r.stipend}
                                 />
                             ))}
                         </div>

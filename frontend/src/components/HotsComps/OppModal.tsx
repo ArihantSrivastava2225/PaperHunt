@@ -16,6 +16,7 @@ const OppModal: React.FC<OppModalProps> = ({ isOpen, onClose }) => {
     duration: "",
     status: "open",
     reachoutemail: "",
+    stipend: "",
   });
 
   const handleChange = (
@@ -39,6 +40,7 @@ const OppModal: React.FC<OppModalProps> = ({ isOpen, onClose }) => {
       duration: form.duration.trim(),
       status: form.status,
       reachoutemail: form.reachoutemail,
+      stipend: form.stipend.trim(),
     };
 
     const res = await fetch('/api/hots/research-opportunites/add', {
@@ -154,6 +156,19 @@ const OppModal: React.FC<OppModalProps> = ({ isOpen, onClose }) => {
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
+        </div>
+
+        {/* Stipend */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Stipend</label>
+          <input
+            type="text"
+            name="stipend"
+            value={form.stipend}
+            onChange={handleChange}
+            placeholder="e.g. $1000/month or Unpaid"
+            className="w-full p-2 border border-gray-300 rounded-md"
+          />
         </div>
 
         {/* Email to reach out to  */}
