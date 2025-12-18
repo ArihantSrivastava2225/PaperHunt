@@ -35,7 +35,7 @@ const FALLBACK_NEWS = [
 ];
 
 export const addResearchOpportunity = async (req, res) => {
-    const { title, description, skillsRequired, membersNeeded, duration, status, reachoutemail } = req.body;
+    const { title, description, skillsRequired, membersNeeded, duration, status, reachoutemail, stipend } = req.body;
     if (!title || !description || !skillsRequired || !membersNeeded || !duration || !status || !reachoutemail) {
         return res.status(400).json({ success: false, message: "All fields are required " });
     }
@@ -50,6 +50,7 @@ export const addResearchOpportunity = async (req, res) => {
             duration,
             status: status || 'open',
             reachoutemail,
+            stipend,
             createdBy: req.user.id,
         };
         await Research.create(opp);
