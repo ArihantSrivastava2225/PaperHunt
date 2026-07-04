@@ -1,16 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useAppSelector } from "@/store/hooks";
 
 const Navbar = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/auth/validate", { credentials: "include" })
-      .then(res => res.json())
-      .then(data => setLoggedIn(data.loggedIn));
-  }, []);
+  const loggedIn = useAppSelector((state) => state.auth.isAuthenticated);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-primary/20">
@@ -26,9 +20,6 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-foreground/80 hover:text-primary transition-colors font-medium">
               Home
-            </Link>
-            <Link to="/discover" className="text-foreground/80 hover:text-primary transition-colors font-medium">
-              Discover
             </Link>
             <Link to="/about" className="text-foreground/80 hover:text-primary transition-colors font-medium">
               About

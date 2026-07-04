@@ -13,7 +13,7 @@ export const sendFeedback = async (req, res) => {
     }
 
     const msg = {
-        to: ['arihantsrivastava_cs24a02_013@dtu.ac.in', 'anujkumaryadav_cs24a02_008@dtu.ac.in'],
+        to: ['arihantsrivastava_cs24a02_013@dtu.ac.in'],
         from: process.env.VERIFIED_SENDER_EMAIL, // Must be verified in SendGrid
         subject: `PaperHunt Feedback from ${name}`,
         text: `

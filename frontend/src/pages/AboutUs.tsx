@@ -2,15 +2,13 @@
 import { motion } from "framer-motion";
 import { Sparkles, Users, Globe, BookOpen, Quote } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import SideBar from "@/components/SideBar";
 
 const AboutUs = () => {
     return (
         <div className="min-h-screen bg-white text-gray-800 overflow-hidden font-sans selection:bg-blue-100 selection:text-blue-900">
             <Navbar />
-            <SideBar />
 
-            <main className="pt-24 pl-24 pr-6 md:pr-12 lg:pr-24 container mx-auto mb-20 relative z-10">
+            <main className="px-6 md:px-12 lg:px-24">
                 {/* Decorative background blobs */}
                 <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent -z-10 pointer-events-none" />
                 <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-100/30 rounded-full blur-3xl -z-10 animate-pulse-glow" />

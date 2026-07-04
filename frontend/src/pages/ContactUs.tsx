@@ -1,9 +1,7 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, MessageSquare, User, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import SideBar from "@/components/SideBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,9 +49,8 @@ const ContactUs = () => {
     return (
         <div className="min-h-screen bg-white text-gray-800 overflow-hidden font-sans selection:bg-cyan-100 selection:text-cyan-900">
             <Navbar />
-            <SideBar />
 
-            <main className="pt-24 pl-24 pr-6 md:pr-12 lg:pr-24 container mx-auto mb-20 flex flex-col items-center min-h-[85vh] relative z-10">
+            <main className="px-6 md:px-12 lg:px-24">
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50/40 to-transparent -z-10 pointer-events-none" />
 
                 <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start mt-10">

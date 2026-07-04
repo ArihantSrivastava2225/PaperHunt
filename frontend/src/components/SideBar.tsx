@@ -3,11 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Home, Compass, BookOpen, Flame, Info, LogOut, Menu, Briefcase } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
+import { useAppDispatch } from "@/store/hooks";
+import { clearCredentials } from "@/store/authSlice";
 
 const SideBar = () => {
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const navItems = [
     { name: "Home", icon: <Home />, path: "/" },
@@ -26,8 +29,9 @@ const SideBar = () => {
     })
       .then((res) => {
         if (res.ok) {
+          dispatch(clearCredentials());
           alert("Signed out successfully");
-          navigate("/");
+          navigate("/", { replace: true });
         }
       })
       .catch((err) => {

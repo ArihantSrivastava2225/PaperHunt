@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/AuthForm";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/authSlice";
 
 const SignIn = () => {
   const [formType, setFormType] = useState("signin");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleChangeFormType = () => {
     setFormType((prev) => (prev === "signin" ? "signup" : "signin"));
@@ -27,7 +30,8 @@ const SignIn = () => {
       console.log(result);
       alert(result.message);
       if (result.success) {
-        navigate("/discover");
+        dispatch(setCredentials(result.user));
+        navigate("/discover", { replace: true });
       }
     } catch (err) {
       console.error(err);
