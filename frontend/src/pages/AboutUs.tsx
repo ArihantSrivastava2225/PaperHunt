@@ -8,7 +8,7 @@ const AboutUs = () => {
         <div className="min-h-screen bg-white text-gray-800 overflow-hidden font-sans selection:bg-blue-100 selection:text-blue-900">
             <Navbar />
 
-            <main className="px-6 md:px-12 lg:px-24">
+            <main className="container relative z-10 mx-auto mb-20 px-6 pt-24 md:px-12 lg:px-24">
                 {/* Decorative background blobs */}
                 <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent -z-10 pointer-events-none" />
                 <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-100/30 rounded-full blur-3xl -z-10 animate-pulse-glow" />

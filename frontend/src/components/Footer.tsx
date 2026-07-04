@@ -1,107 +1,79 @@
-import { Github, Twitter, Mail, Sparkles } from "lucide-react";
+import { Github, Mail, Sparkles, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="relative border-t border-primary/20 overflow-hidden">
-      {/* Twinkling stars overlay */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-primary rounded-full animate-twinkle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Gradient glow */}
-      <div className="absolute inset-0 bg-gradient-to-t from-secondary/10 to-transparent pointer-events-none" />
-
-      <div className="container mx-auto px-6 py-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-2xl font-heading font-bold text-glow-cyan">
-                PaperHunt
+    <footer className="border-t border-slate-200 bg-white px-6 text-slate-700">
+      <div className="container mx-auto max-w-6xl py-12">
+        <div className="grid gap-8 md:grid-cols-[1.4fr_0.8fr_0.8fr]">
+          <div>
+            <Link to="/" className="mb-4 flex items-center gap-2">
+              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-950 text-cyan-300">
+                <Sparkles className="h-5 w-5" />
               </span>
-            </div>
-            <p className="text-muted-foreground max-w-md">
-              Your AI-powered telescope for exploring the universe of research papers. 
-              Discover, understand, and connect knowledge across the scientific cosmos.
+              <span className="font-sans text-2xl font-bold tracking-normal text-slate-950">PaperHunt</span>
+            </Link>
+            <p className="max-w-md leading-7 text-slate-600">
+              A focused research workspace for discovering papers, understanding them faster, tracking news,
+              and finding academic opportunities.
             </p>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h3 className="font-heading font-semibold mb-4 text-foreground">
-              Explore
-            </h3>
-            <ul className="space-y-2">
-              {["Home", "Discover", "About", "Contact"].map((item) => (
-                <li key={item}>
-                  <Link
-                    to={`/${item.toLowerCase()}`}
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {item}
+            <h3 className="mb-4 font-sans font-bold tracking-normal text-slate-950">Explore</h3>
+            <ul className="space-y-3 text-sm">
+              {[
+                ["Home", "/"],
+                ["About", "/about"],
+                ["Contact", "/contact"],
+                ["Sign in", "/signin"],
+              ].map(([label, path]) => (
+                <li key={label}>
+                  <Link to={path} className="text-slate-600 transition hover:text-blue-600">
+                    {label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Resources */}
           <div>
-            <h3 className="font-heading font-semibold mb-4 text-foreground">
-              Resources
-            </h3>
-            <ul className="space-y-2">
-              {["Documentation", "API", "Blog", "Support"].map((item) => (
-                <li key={item}>
-                  <a
-                    href="#"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {item}
-                  </a>
+            <h3 className="mb-4 font-sans font-bold tracking-normal text-slate-950">Workspace</h3>
+            <ul className="space-y-3 text-sm">
+              {[
+                ["Discover", "/discover"],
+                ["Library", "/library"],
+                ["News", "/hots"],
+                ["Opportunities", "/research-opportunities"],
+              ].map(([label, path]) => (
+                <li key={label}>
+                  <Link to={path} className="text-slate-600 transition hover:text-blue-600">
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-8 border-t border-primary/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © 2025 PaperHunt. Navigating the knowledge cosmos.
-          </p>
-          
-          <div className="flex items-center gap-4">
-            <a
-              href="#"
-              className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-primary/10 hover:border-primary/40 transition-all group"
-            >
-              <Twitter className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </a>
-            <a
-              href="#"
-              className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-primary/10 hover:border-primary/40 transition-all group"
-            >
-              <Github className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </a>
-            <a
-              href="#"
-              className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-primary/10 hover:border-primary/40 transition-all group"
-            >
-              <Mail className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            </a>
+        <div className="mt-10 flex flex-col gap-4 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-slate-500">Copyright 2026 PaperHunt. All rights reserved.</p>
+
+          <div className="flex items-center gap-3">
+            {[
+              { label: "Twitter", icon: Twitter },
+              { label: "GitHub", icon: Github },
+              { label: "Email", icon: Mail },
+            ].map((item) => (
+              <a
+                key={item.label}
+                href="#"
+                aria-label={item.label}
+                className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+              >
+                <item.icon className="h-4 w-4" />
+              </a>
+            ))}
           </div>
         </div>
       </div>

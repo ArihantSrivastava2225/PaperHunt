@@ -1,47 +1,42 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Sparkles } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const loggedIn = useAppSelector((state) => state.auth.isAuthenticated);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-primary/20">
+    <nav className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200/80 bg-white/85 backdrop-blur-xl">
       <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-6">
           <Link to="/" className="flex items-center gap-2 group">
-            <Sparkles className="h-6 w-6 text-primary group-hover:animate-pulse-glow transition-all" />
-            <span className="text-2xl font-heading font-bold text-glow-cyan">
-              PaperHunt
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-950 text-cyan-300 transition group-hover:bg-blue-700">
+              <Sparkles className="h-5 w-5" />
             </span>
+            <span className="font-sans text-2xl font-bold tracking-normal text-slate-950">PaperHunt</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-foreground/80 hover:text-primary transition-colors font-medium">
-              Home
-            </Link>
-            <Link to="/about" className="text-foreground/80 hover:text-primary transition-colors font-medium">
-              About
-            </Link>
-            <Link to="/contact" className="text-foreground/80 hover:text-primary transition-colors font-medium">
-              Contact
-            </Link>
+          <div className="hidden items-center gap-8 md:flex">
+            {[
+              ["Home", "/"],
+              ["About", "/about"],
+              ["Contact", "/contact"],
+            ].map(([label, path]) => (
+              <Link key={label} to={path} className="font-medium text-slate-600 transition hover:text-blue-600">
+                {label}
+              </Link>
+            ))}
           </div>
 
           <Button
-            variant="outline"
-            className="border-primary/40 text-primary hover:bg-primary/10 hover:border-primary hover:glow-cyan transition-all"
+            asChild
+            className="h-10 rounded-lg bg-slate-950 px-4 text-white hover:bg-blue-700"
           >
-            {loggedIn ? (
-              <Link to="/discover">
-                Get Started
-              </Link>
-            ) : (
-              <Link to="/signin">
-                Login
-              </Link>
-            )}
+            <Link to={loggedIn ? "/discover" : "/signin"}>
+              {loggedIn ? "Open workspace" : "Sign in"}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>

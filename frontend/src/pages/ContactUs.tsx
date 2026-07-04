@@ -50,7 +50,7 @@ const ContactUs = () => {
         <div className="min-h-screen bg-white text-gray-800 overflow-hidden font-sans selection:bg-cyan-100 selection:text-cyan-900">
             <Navbar />
 
-            <main className="px-6 md:px-12 lg:px-24">
+            <main className="container relative z-10 mx-auto mb-20 flex min-h-[85vh] flex-col items-center px-6 pt-24 md:px-12 lg:px-24">
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50/40 to-transparent -z-10 pointer-events-none" />
 
                 <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start mt-10">
