@@ -21,11 +21,16 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:8080",   // frontend origin
+  origin: process.env.CLIENT_URL || "http://localhost:8080",   // frontend origin
   credentials: true,                 // allows cookies
 }));
 
-
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "paperhunt-backend",
+  });
+});
 
 // Routes
 app.use("/api/auth", authRoutes);

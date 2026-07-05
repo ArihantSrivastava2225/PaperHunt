@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 
+type ResearchNewsItem = {
+  title: string;
+  link: string;
+  description?: string;
+  source?: string;
+  pubDate: string;
+};
+
 const ResearchNewsSection: React.FC = () => {
-  const [news, setNews] = useState<any[]>([]);
+  const [news, setNews] = useState<ResearchNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

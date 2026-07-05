@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Local Kubernetes secrets
+k8s/backend/backend-secret.yaml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,3 +28,5 @@ dist-ssr
 
 # Ignore environment files
 .env
+.env.*
+!.env.example
