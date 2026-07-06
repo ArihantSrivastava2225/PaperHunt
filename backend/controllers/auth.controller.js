@@ -7,6 +7,24 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const NODE_ENV = process.env.NODE_ENV;
+const COOKIE_SECURE = process.env.COOKIE_SECURE
+    ? process.env.COOKIE_SECURE === "true"
+    : NODE_ENV === "production";
+const COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE || "strict";
+const COOKIE_MAX_AGE = 7 * 60 * 60 * 1000; // 7 hours
+
+const authCookieOptions = {
+    httpOnly: true,
+    secure: COOKIE_SECURE,
+    sameSite: COOKIE_SAME_SITE,
+    maxAge: COOKIE_MAX_AGE,
+};
+
+const clearCookieOptions = {
+    httpOnly: true,
+    sameSite: COOKIE_SAME_SITE,
+    secure: COOKIE_SECURE,
+};
 
 export const signup = async (req, res) => {
     try {
@@ -29,12 +47,7 @@ export const signup = async (req, res) => {
         });
 
         // ✅ Store token in HTTP-only cookie
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 60 * 60 * 1000, // 7 hours
-        });
+        res.cookie("token", token, authCookieOptions);
 
         res.status(201).json({
             success: true,
@@ -77,12 +90,7 @@ export const signin = async (req, res) => {
         const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7h" });
 
         // 🍪 Set token in HttpOnly cookie
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 60 * 60 * 1000, // 7 hours
-        });
+        res.cookie("token", token, authCookieOptions);
 
         res.status(200).json({
             success: true,
@@ -97,11 +105,7 @@ export const signin = async (req, res) => {
 
 export const signout = async (req, res) => {
     try {
-        res.clearCookie("token", {
-            httpOnly: true,
-            sameSite: "strict",
-            secure: NODE_ENV === "production",
-        });
+        res.clearCookie("token", clearCookieOptions);
         res.status(200).json({ message: "Signout successful" });
     } catch (err) {
         console.error("Signout error:", err);
