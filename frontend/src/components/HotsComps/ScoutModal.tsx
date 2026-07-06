@@ -63,10 +63,10 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
         <Modal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="absolute left-1/2 top-1/2 flex h-[92vh] w-[94vw] max-w-5xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl outline-none sm:h-[90vh] lg:rounded-3xl"
+            className="absolute left-1/2 top-1/2 flex max-h-[calc(100dvh-2rem)] w-[94vw] max-w-5xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-2xl outline-none lg:h-[90vh] lg:overflow-hidden lg:rounded-3xl"
             overlayClassName="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] transition-opacity duration-300"
         >
-            <div className="flex h-full flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
+            <div className="flex min-h-full flex-col lg:h-full lg:flex-row lg:overflow-hidden">
                 {/* Sidebar / Left Panel */}
                 <div className="w-full shrink-0 border-b border-gray-200 bg-gray-50 p-4 sm:p-6 lg:w-1/3 lg:border-b-0 lg:border-r lg:p-8">
                     <div className="mb-5 lg:mb-8">
@@ -152,9 +152,9 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Results Area */}
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white p-4 sm:p-6 lg:p-8">
+                <div className="flex min-h-[18rem] flex-col bg-white p-4 sm:p-6 lg:min-h-0 lg:flex-1 lg:overflow-hidden lg:p-8">
                     {!results && !loading && (
-                        <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+                        <div className="flex min-h-[16rem] flex-col items-center justify-center text-center opacity-40 lg:h-full">
                             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                                 <Globe size={40} className="text-gray-400" />
                             </div>
@@ -166,7 +166,7 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
                     )}
 
                     {loading && (
-                        <div className="h-full flex flex-col items-center justify-center space-y-6">
+                        <div className="flex min-h-[16rem] flex-col items-center justify-center space-y-6 lg:h-full">
                             <div className="relative">
                                 <div className="w-20 h-20 border-4 border-purple-100 border-t-purple-600 rounded-full animate-spin"></div>
                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -181,7 +181,7 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
                     )}
 
                     {results && (
-                        <div className="h-full flex flex-col">
+                        <div className="flex flex-col lg:h-full">
                             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">Scout Results</h3>
@@ -192,7 +192,7 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto pr-2 space-y-4 pb-4">
+                            <div className="space-y-4 pb-4 lg:flex-1 lg:overflow-y-auto lg:pr-2">
                                 {results.map((res, idx) => (
                                     <div key={idx} className="group rounded-2xl border border-gray-100 bg-white p-4 transition-all hover:border-purple-100 hover:shadow-lg sm:p-5">
                                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
