@@ -9,6 +9,7 @@ const researchSchema = new mongoose.Schema({
   duration: String, // or { start: Date, end: Date }
   status: { type: String, enum: ['open', 'closed'], default: 'open' },
   reachoutemail: String,
+  stipend: String,
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   createdAt: { type: Date, default: Date.now },
 });
