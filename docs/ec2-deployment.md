@@ -10,7 +10,7 @@ This guide deploys PaperHunt on one EC2 instance using ECR images and Docker Com
 - `frontend` serves the React build through Nginx inside the private Compose network.
 - `caddy` proxies `/api` to the Compose service named `backend-service`.
 - `backend-service` runs the Express API from the ECR backend image.
-- `redis` runs as a private container with a persistent Docker volume.
+- `redis` runs as a private container with a persistent Docker volume by default.
 - MongoDB should use MongoDB Atlas through `MONGO_URI`.
 
 ## AWS Console Setup
@@ -87,6 +87,18 @@ Copy `deploy/ec2/Caddyfile` to the same folder as:
 Caddyfile
 ```
 
+Copy `deploy/ec2/deploy.sh` to the same folder as:
+
+```txt
+deploy.sh
+```
+
+Make it executable on EC2:
+
+```bash
+chmod +x deploy.sh
+```
+
 Create a server-only `.env` file from `deploy/ec2/env.example`.
 
 For production HTTPS, set:
@@ -100,6 +112,34 @@ COOKIE_SECURE=true
 
 Before starting Caddy, create an `A` record in your DNS provider pointing the domain to the EC2 public IP or Elastic IP. Ports `80` and `443` must be open in the EC2 security group.
 
+For local Redis inside Docker Compose, keep:
+
+```txt
+REDIS_CONNECTION_URL=
+REDIS_USERNAME=default
+REDIS_URL=redis
+REDIS_PORT=6379
+REDIS_TLS=false
+REDIS_DB_PASSWORD=
+```
+
+For managed Redis, set the managed host, port, password, and TLS flag provided by the service:
+
+```txt
+REDIS_CONNECTION_URL=
+REDIS_USERNAME=default
+REDIS_URL=your-managed-redis-host
+REDIS_PORT=your-managed-redis-port
+REDIS_TLS=true-or-false
+REDIS_DB_PASSWORD=your-managed-redis-password
+```
+
+If your provider gives a full Redis connection string, use `REDIS_CONNECTION_URL` instead:
+
+```txt
+REDIS_CONNECTION_URL=rediss://default:password@your-managed-redis-host:port
+```
+
 ## Login To ECR
 
 Run this on the EC2 instance:
@@ -112,9 +152,18 @@ The EC2 IAM role provides permission to pull private ECR images.
 
 ## Start PaperHunt
 
+Recommended:
+
 ```bash
-docker compose pull
-docker compose up -d
+./deploy.sh
+```
+
+Manual equivalent:
+
+```bash
+docker compose --env-file .env config --quiet
+docker compose --env-file .env pull
+docker compose --env-file .env up -d --remove-orphans
 docker compose ps
 ```
 
@@ -136,6 +185,5 @@ https://your-domain
 When GitHub Actions publishes a new ECR image, update `IMAGE_TAG` in `.env`, then run:
 
 ```bash
-docker compose pull
-docker compose up -d
+./deploy.sh
 ```
