@@ -1,0 +1,5 @@
+resources:
+  - backend-configmap.yaml
+  - backend-deployment.yaml
+  - backend-hpa.yaml
+  - backend-service.yaml

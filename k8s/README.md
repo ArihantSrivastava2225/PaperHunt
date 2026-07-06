@@ -80,6 +80,43 @@ kubectl apply -f k8s/backend/
 kubectl apply -f k8s/frontend/
 ```
 
+Or deploy everything with Kustomize:
+
+```powershell
+kubectl apply -f k8s/backend/backend-secret.yaml
+kubectl apply -k k8s/
+```
+
+The Kustomize base intentionally does not include `backend-secret.yaml`, so real local secrets are not rendered into command output. Apply the secret file separately before applying the Kustomize base.
+
+## AWS ECR Overlay
+
+The base manifests use local Docker image names:
+
+```txt
+paperhunt-backend:latest
+paperhunt-frontend:k8s
+```
+
+For AWS/ECR-style deployments, update these tags in `k8s/overlays/aws-ecr/kustomization.yaml` whenever the image publishing workflow creates a new commit SHA image:
+
+```yaml
+newTag: replace-with-backend-commit-sha
+newTag: replace-with-frontend-commit-sha
+```
+
+Then render or apply the overlay:
+
+```powershell
+kubectl kustomize k8s/overlays/aws-ecr
+kubectl apply -f k8s/backend/backend-secret.yaml
+kubectl apply -k k8s/overlays/aws-ecr
+```
+
+The overlay keeps the same Kubernetes objects but replaces local image names with ECR image URLs.
+
+Do not apply this overlay to Docker Desktop Kubernetes unless the cluster has credentials to pull from private ECR. On AWS EKS, ECR pull access is normally handled through the node role or pod identity permissions.
+
 ## Verify
 
 ```powershell
