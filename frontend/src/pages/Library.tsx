@@ -55,44 +55,44 @@ const Library = () => {
     }
 
     return (
-        <div className='flex'>
+        <div className='min-h-screen bg-white'>
             <SideBar />
-            <div className='flex flex-col justify-center items-center bg-white/10 w-full min-h-screen ml-14 pt-20 pb-10'>
-            <section className='w-[80%] space-y-2 mt-7'>
-                <h1 className='mb-6 font-bold floating-animation flex gap-3.5 justify-center items-center'>
+            <div className='flex min-h-screen w-full flex-col items-center px-4 pb-28 pt-8 sm:px-6 lg:pb-10 lg:pl-72 lg:pr-10 lg:pt-20'>
+            <section className='mt-7 w-full max-w-5xl space-y-2'>
+                <h1 className='mb-6 flex items-center justify-center gap-3.5 text-center font-bold floating-animation'>
                     <IoLibraryOutline />
                     <span>Library</span>
                 </h1>
-                <p className='font-semibold text-2xl'>
+                <p className='text-2xl font-semibold sm:text-3xl'>
                     Keep the story going ...
                 </p>
-                <p className=''>Greater you immerse yourself in the world of literature, the more vividly you begin to live lives beyond your own</p>
+                <p className='text-sm text-gray-600 sm:text-base'>Greater you immerse yourself in the world of literature, the more vividly you begin to live lives beyond your own</p>
             </section>
 
-            <section className='w-[94%] bg-orange-50 rounded-2xl !p-4'>
-                <div className='flex justify-between items-center bg-white/50 rounded-2xl'>
-                    <div>
+            <section className='mt-8 w-full max-w-7xl rounded-2xl bg-orange-50 !p-3 sm:!p-4'>
+                <div className='flex flex-col gap-3 rounded-2xl bg-white/50 p-2 sm:flex-row sm:items-center sm:justify-between'>
+                    <div className='flex flex-wrap gap-2'>
                         <button className='!text-[#9ca3af] hover:!text-[#a16207] !bg-white hover:!bg-[#f5e8dc]' onClick={() => setLibView("shelves")}>Shelves</button>
                         <button className='!text-[#9ca3af] hover:!text-[#a16207] !bg-white hover:!bg-[#f5e8dc]' onClick={() => setLibView("allBooks")}>All Your Books</button>
                     </div>
-                    <div className='flex justify-center items-center w-1/2'>
+                    <div className='flex w-full items-center rounded-xl bg-white px-3 sm:max-w-xl'>
                         <CiSearch />
                         <input
                             type="text"
                             value={searchTerm}
                             placeholder="Enter title or author of book you want to find"
-                            className="w-full"
+                            className="w-full min-w-0 bg-transparent px-2 py-2 text-sm outline-none sm:text-base"
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                 </div>
-                <section className='w-[94%] h-[900px] grid grid-cols-1 grid-rows-3 gap-4'>
+                <section className='mt-6 w-full space-y-8'>
                     {gotSearchResult ? (
                         <>
                             {searchResults.length > 0 ? (
                                 <div>
                                     <div className="text-xl font-semibold mb-3 !text-[#a16207]">Search Results</div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                                         {searchResults.map((paper, index) => (
                                             <PaperLibCard key={index} paper={paper} onPaperChange={onPaperChange} />
                                         ))}

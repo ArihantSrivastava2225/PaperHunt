@@ -51,8 +51,8 @@ const AddPaperModal = ({ isOpen, onClose, paper }) => {
           transform: 'translate(-50%, -50%)',
           width: '90%',
           maxWidth: '550px',
-          height: '50%',
-          maxHeight: '650px',
+          maxHeight: '85vh',
+          overflowY: 'auto',
           padding: '20px',
           borderRadius: '10px',
           boxShadow: '0px 4px 8px rgba(0,0,0,0.2)',
@@ -87,7 +87,7 @@ const AddPaperModal = ({ isOpen, onClose, paper }) => {
         </select>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onClose}

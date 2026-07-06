@@ -63,13 +63,13 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
         <Modal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="outline-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-5xl h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-100"
+            className="absolute left-1/2 top-1/2 flex h-[92vh] w-[94vw] max-w-5xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl outline-none sm:h-[90vh] lg:rounded-3xl"
             overlayClassName="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] transition-opacity duration-300"
         >
-            <div className="flex h-full">
+            <div className="flex h-full flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
                 {/* Sidebar / Left Panel */}
-                <div className="w-1/3 bg-gray-50 border-r border-gray-200 p-8 flex flex-col">
-                    <div className="mb-8">
+                <div className="w-full shrink-0 border-b border-gray-200 bg-gray-50 p-4 sm:p-6 lg:w-1/3 lg:border-b-0 lg:border-r lg:p-8">
+                    <div className="mb-5 lg:mb-8">
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
                             <Sparkles className="text-purple-600" />
                             AI Scout
@@ -79,7 +79,7 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
                         </p>
                     </div>
 
-                    <form onSubmit={handleScout} className="space-y-5 flex-1">
+                    <form onSubmit={handleScout} className="space-y-4 lg:space-y-5">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Research Topic / Field *
@@ -144,7 +144,7 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
                         </button>
                     </form>
 
-                    <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="mt-5 border-t border-gray-200 pt-4 lg:mt-8 lg:pt-6">
                         <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-sm font-medium">
                             Cancel & Close
                         </button>
@@ -152,7 +152,7 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Results Area */}
-                <div className="flex-1 bg-white p-8 overflow-hidden flex flex-col">
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white p-4 sm:p-6 lg:p-8">
                     {!results && !loading && (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
@@ -182,7 +182,7 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
 
                     {results && (
                         <div className="h-full flex flex-col">
-                            <div className="flex justify-between items-end mb-6">
+                            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">Scout Results</h3>
                                     <p className="text-sm text-gray-500">Found {results.length} potentials based on "{topic}"</p>
@@ -194,8 +194,8 @@ const ScoutModal: React.FC<ScoutModalProps> = ({ isOpen, onClose }) => {
 
                             <div className="flex-1 overflow-y-auto pr-2 space-y-4 pb-4">
                                 {results.map((res, idx) => (
-                                    <div key={idx} className="border border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:border-purple-100 transition-all group bg-white">
-                                        <div className="flex justify-between items-start">
+                                    <div key={idx} className="group rounded-2xl border border-gray-100 bg-white p-4 transition-all hover:border-purple-100 hover:shadow-lg sm:p-5">
+                                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <h4 className="text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">

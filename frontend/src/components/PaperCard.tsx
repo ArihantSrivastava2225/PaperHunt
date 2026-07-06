@@ -46,28 +46,28 @@ const PaperCard = ({ title, doi, authors, pdfLink }) => {
   }, [aiSummary]);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
-      <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
+      <h2 className="break-words text-lg font-semibold text-gray-900 transition-colors hover:text-blue-600 sm:text-xl">
         {title}
       </h2>
       {authors && (
-        <p className="text-gray-600 text-sm mt-1">
+        <p className="mt-1 break-words text-sm text-gray-600">
           {Array.isArray(authors) ? authors.join(", ") : authors}
         </p>
       )}
       {doi && (
-        <p className="text-gray-400 text-xs mt-1">
+        <p className="mt-1 break-all text-xs text-gray-400">
           DOI: <a href={doi} target="_blank" className="text-gray-500">{doi}</a>
         </p>
       )}
 
-      <div className="flex items-center gap-3 mt-4">
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         {pdfLink && (
           <a
             href={pdfLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-blue-600 hover:underline text-sm font-medium"
+          className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:underline"
           >
             <FileText className="h-4 w-4" /> View PDF
           </a>
@@ -75,7 +75,7 @@ const PaperCard = ({ title, doi, authors, pdfLink }) => {
         <Button
           size="sm"
           variant="outline"
-          className="text-blue-600 border-blue-400 hover:bg-blue-50 rounded-lg"
+          className="w-full rounded-lg border-blue-400 text-blue-600 hover:bg-blue-50 sm:w-auto"
           onClick={handleAISummary}
         >
           <ExternalLink className="h-4 w-4 mr-1" /> AI Summary
@@ -84,7 +84,7 @@ const PaperCard = ({ title, doi, authors, pdfLink }) => {
         <Button
           size="sm"
           variant="outline"
-          className="text-blue-600 border-blue-400 hover:bg-blue-50 rounded-lg"
+          className="w-full rounded-lg border-blue-400 text-blue-600 hover:bg-blue-50 sm:w-auto"
           onClick={openModal}
         >
           <ExternalLink className="h-4 w-4 mr-1" /> Add to Library

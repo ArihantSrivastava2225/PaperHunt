@@ -75,8 +75,8 @@ const LibPaperModal = ({ isOpen, onClose, paper, onPaperChange }) => {
           transform: 'translate(-50%, -50%)',
           width: '90%',
           maxWidth: '550px',
-          height: '50%',
-          maxHeight: '650px',
+          maxHeight: '85vh',
+          overflowY: 'auto',
           padding: '20px',
           borderRadius: '10px',
           boxShadow: '0px 4px 8px rgba(0,0,0,0.2)',
@@ -90,7 +90,7 @@ const LibPaperModal = ({ isOpen, onClose, paper, onPaperChange }) => {
         {paper.authors && paper.authors.length > 0 && (
           <p className="mb-1"><strong>Authors:</strong> {paper.authors.join(", ")}</p>
         )}
-        <div className="flex gap-4 mt-2">
+        <div className="mt-2 flex flex-wrap gap-4">
           {paper.pdfLink && paper.pdfLink !== "N/A" && (
             <a href={paper.pdfLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800">
               View PDF
@@ -131,7 +131,7 @@ const LibPaperModal = ({ isOpen, onClose, paper, onPaperChange }) => {
         </select>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={handleClose}

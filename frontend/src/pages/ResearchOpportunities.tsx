@@ -58,19 +58,19 @@ const ResearchOpportunities: React.FC = () => {
     }, []);
 
     return (
-        <div className="flex bg-gray-50 min-h-screen">
+        <div className="min-h-screen bg-gray-50">
             <SideBar />
 
-            <div className="flex-1 p-8 pl-24 overflow-y-auto w-full"> {/* Added pl-24 for sidebar offset */}
+            <div className="min-h-screen w-full overflow-y-auto px-4 pb-28 pt-8 sm:px-6 lg:py-8 lg:pl-72 lg:pr-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 mt-8 flex justify-between items-center flex-wrap gap-4">
+                    <div className="mb-8 mt-4 flex flex-col gap-4 sm:mt-8 lg:flex-row lg:items-center lg:justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">🔥 Research Opportunities</h1>
                             <p className="text-gray-500 mt-1">
                                 Discover the latest ongoing studies and connect with researchers.
                             </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                             <button
                                 className="bg-black text-white hover:bg-gray-800 transition font-semibold py-2 px-6 rounded-xl border border-transparent shadow-lg flex items-center gap-2"
                                 onClick={() => setIsScoutModalOpen(true)}
@@ -104,7 +104,7 @@ const ResearchOpportunities: React.FC = () => {
                             <p>No research opportunities available yet.</p>
                         </div>
                     ) : (
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                             {researches.map((r) => (
                                 <ResearchCard
                                     key={r._id}
