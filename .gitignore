@@ -15,6 +15,9 @@ dist-ssr
 # Local Kubernetes secrets
 k8s/backend/backend-secret.yaml
 
+# Local EC2 deployment secrets
+deploy/ec2/.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
