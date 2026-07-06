@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import { connectRedis } from "./config/redis.js";
+import { metricsHandler, metricsMiddleware } from "./middlewares/metrics.middleware.js";
 import path from "path";
 
 import authRoutes from "./routes/auth.routes.js";
@@ -24,6 +25,7 @@ app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:8080",   // frontend origin
   credentials: true,                 // allows cookies
 }));
+app.use(metricsMiddleware);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -31,6 +33,8 @@ app.get("/api/health", (req, res) => {
     service: "paperhunt-backend",
   });
 });
+
+app.get("/api/metrics", metricsHandler);
 
 // Routes
 app.use("/api/auth", authRoutes);

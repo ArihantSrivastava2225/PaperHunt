@@ -5,6 +5,7 @@
 {$APP_DOMAIN} {
     encode zstd gzip
 
+    respond /api/metrics 404
     reverse_proxy /api/* backend-service:5000
     reverse_proxy frontend:80
 }

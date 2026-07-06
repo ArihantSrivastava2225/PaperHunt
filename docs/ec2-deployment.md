@@ -11,6 +11,10 @@ This guide deploys PaperHunt on one EC2 instance using ECR images and Docker Com
 - `caddy` proxies `/api` to the Compose service named `backend-service`.
 - `backend-service` runs the Express API from the ECR backend image.
 - `redis` runs as a private container with a persistent Docker volume by default.
+- `prometheus` scrapes backend, host, and container metrics.
+- `grafana` visualizes Prometheus metrics and is bound to EC2 localhost only.
+- `node-exporter` exposes EC2 host CPU, memory, disk, and network metrics.
+- `cadvisor` exposes Docker container CPU, memory, and network metrics.
 - MongoDB should use MongoDB Atlas through `MONGO_URI`.
 
 ## AWS Console Setup
@@ -47,6 +51,8 @@ HTTPS 443  0.0.0.0/0
 ```
 
 Do not expose backend port `5000`, Redis port `6379`, or MongoDB port `27017`.
+
+Do not expose Grafana port `3001` or Prometheus port `9090` publicly. They are bound to EC2 localhost and should be accessed through an SSH tunnel.
 
 ## Install Docker On EC2
 
@@ -91,6 +97,12 @@ Copy `deploy/ec2/deploy.sh` to the same folder as:
 
 ```txt
 deploy.sh
+```
+
+Copy the whole monitoring folder:
+
+```txt
+deploy/ec2/monitoring -> ~/paperhunt/monitoring
 ```
 
 Make it executable on EC2:
@@ -140,6 +152,17 @@ If your provider gives a full Redis connection string, use `REDIS_CONNECTION_URL
 REDIS_CONNECTION_URL=rediss://default:password@your-managed-redis-host:port
 ```
 
+Set monitoring values:
+
+```txt
+PROMETHEUS_HOST_PORT=9090
+PROMETHEUS_RETENTION_TIME=7d
+PROMETHEUS_RETENTION_SIZE=1GB
+GRAFANA_HOST_PORT=3001
+GRAFANA_ADMIN_USER=admin
+GRAFANA_ADMIN_PASSWORD=use-a-strong-password
+```
+
 ## Login To ECR
 
 Run this on the EC2 instance:
@@ -172,12 +195,48 @@ View logs:
 ```bash
 docker compose logs -f backend-service
 docker compose logs -f frontend
+docker compose logs -f prometheus
+docker compose logs -f grafana
 ```
 
 Open:
 
 ```txt
 https://your-domain
+```
+
+## Open Monitoring Dashboards
+
+Grafana and Prometheus are intentionally not public. From your local machine, create an SSH tunnel:
+
+```powershell
+ssh -i .\paperhunt-ec2-key.pem -L 3001:localhost:3001 -L 9090:localhost:9090 ec2-user@your-ec2-public-ip
+```
+
+Then open:
+
+```txt
+Grafana:    http://localhost:3001
+Prometheus: http://localhost:9090
+```
+
+Grafana credentials come from:
+
+```txt
+GRAFANA_ADMIN_USER
+GRAFANA_ADMIN_PASSWORD
+```
+
+Prometheus is already provisioned as the default Grafana data source.
+
+Useful Grafana starting points:
+
+```txt
+Explore -> Prometheus -> paperhunt_http_requests_total
+Explore -> Prometheus -> paperhunt_http_request_duration_seconds_bucket
+Explore -> Prometheus -> paperhunt_process_cpu_seconds_total
+Explore -> Prometheus -> container_cpu_usage_seconds_total
+Explore -> Prometheus -> node_memory_MemAvailable_bytes
 ```
 
 ## Update Deployment
