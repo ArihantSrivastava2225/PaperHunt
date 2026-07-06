@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: paperhunt
+spec:
+  template:
+    spec:
+      containers:
+        - name: backend
+          imagePullPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: paperhunt
+spec:
+  template:
+    spec:
+      containers:
+        - name: frontend
+          imagePullPolicy: Always
