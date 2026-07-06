@@ -80,6 +80,8 @@ const OppModal: React.FC<OppModalProps> = ({ isOpen, onClose }) => {
           zIndex: 10000,
           width: "90%",
           maxWidth: "600px",
+          maxHeight: "85vh",
+          overflowY: "auto",
           padding: "24px",
           borderRadius: "16px",
           boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
@@ -132,7 +134,7 @@ const OppModal: React.FC<OppModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Members Needed & Duration */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Members Needed</label>
             <input
@@ -199,7 +201,7 @@ const OppModal: React.FC<OppModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onClose}

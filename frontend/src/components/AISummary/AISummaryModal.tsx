@@ -54,16 +54,16 @@ const AISummaryModal: React.FC<AISummaryModalProps> = ({
       isOpen={modalOpen}
       onRequestClose={handleClose}
       contentLabel="AI Summary"
-      className="outline-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-4xl h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/20"
+      className="absolute left-1/2 top-1/2 flex h-[85vh] w-[94vw] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-white/20 bg-white shadow-2xl outline-none"
       overlayClassName="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] transition-opacity duration-300"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50">
-        <div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+      <div className="flex items-start justify-between gap-3 border-b border-gray-100 bg-gray-50/50 p-4 sm:p-6">
+        <div className="min-w-0">
+          <h2 className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-xl font-bold text-transparent sm:text-2xl">
             AI Research Summary
           </h2>
-          <p className="text-sm text-gray-500 mt-1 truncate max-w-2xl font-medium">
+          <p className="mt-1 max-w-2xl truncate text-sm font-medium text-gray-500">
             {title}
           </p>
         </div>
@@ -87,7 +87,7 @@ const AISummaryModal: React.FC<AISummaryModalProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-8 bg-white/50 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto bg-white/50 p-4 sm:p-8">
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full space-y-4">
             <Spinner />
@@ -96,7 +96,7 @@ const AISummaryModal: React.FC<AISummaryModalProps> = ({
         ) : (
           <div className="prose prose-blue max-w-none">
             {summary ? (
-              <div className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">
+              <div className="whitespace-pre-line text-base leading-relaxed text-gray-700 sm:text-lg">
                 {summary}
               </div>
             ) : (
@@ -109,7 +109,7 @@ const AISummaryModal: React.FC<AISummaryModalProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+      <div className="flex justify-end border-t border-gray-100 bg-gray-50 p-4">
         <button
           onClick={handleClose}
           className="px-6 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transform hover:scale-[1.02] transition-all font-medium shadow-lg shadow-gray-200"

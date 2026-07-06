@@ -37,13 +37,13 @@ const Discover = () => {
   }, [searchResults]);
 
   return (
-    <div className="flex">
+    <div className="min-h-screen">
       <SideBar />
 
-      <main className="flex-1 ml-64 min-h-screen bg-gradient-to-b from-slate-50 to-white p-10">
+      <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-4 pb-28 pt-8 sm:px-6 lg:py-10 lg:pl-72 lg:pr-10">
         {/* Search bar */}
         <div className="max-w-3xl mx-auto">
-          <div className="flex gap-3 items-center bg-white p-3 rounded-2xl shadow-md border border-gray-200">
+          <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-md sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
@@ -57,7 +57,7 @@ const Discover = () => {
             </div>
             <Button
               onClick={handleSearch}
-              className="h-12 px-8 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-lg hover:shadow-blue-300/50 transition-all"
+              className="h-12 w-full rounded-xl bg-blue-500 px-8 font-semibold text-white shadow-lg transition-all hover:bg-blue-600 hover:shadow-blue-300/50 sm:w-auto"
             >
               Search
             </Button>
@@ -65,7 +65,7 @@ const Discover = () => {
         </div>
 
         {/* Results */}
-        <div className="max-w-5xl mx-auto mt-12 px-4">
+        <div className="mx-auto mt-8 max-w-5xl sm:mt-12">
           {loading ? (
             <div className="flex justify-center py-20">
               <Spinner />

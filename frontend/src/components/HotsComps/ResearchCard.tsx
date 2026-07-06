@@ -29,9 +29,9 @@ const ResearchCard: React.FC<ResearchCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 p-6 flex flex-col justify-between">
+    <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6">
       <div>
-        <h2 className="text-lg font-semibold text-gray-800 mb-2">{title}</h2>
+        <h2 className="mb-2 break-words text-lg font-semibold text-gray-800">{title}</h2>
         <p className="text-gray-600 text-sm line-clamp-3 mb-4">{description}</p>
 
         <div className="flex flex-wrap gap-2 mb-3">
@@ -60,7 +60,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({
         </div>
       </div>
 
-      <div className="mt-5 flex items-center justify-between">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span
           className={`px-3 py-1 rounded-full text-xs font-semibold ${status === "open"
             ? "bg-green-100 text-green-700"
@@ -73,7 +73,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({
         {status === "open" && (
           <button
             onClick={openMail}
-            className="flex items-center gap-2 text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition"
+            className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white transition hover:bg-blue-700"
           >
             <Mail size={14} /> Connect
           </button>

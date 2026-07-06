@@ -14,11 +14,11 @@ const ShelfSection = ({ title, papers, onPaperChange }) => {
   }, []);
 
   return (
-    <div className="!my-8 h-[30%] w-[96%]">
+    <div className="!my-8 w-full">
       <div className="text-xl font-semibold mb-3 !text-[#a16207]">{title}</div>
 
       {papers.length>0 ? (
-        <div className="flex items-end space-x-4 !px-2 pt-2 overflow-x-auto hide-scrollbar">
+        <div className="flex items-end gap-4 overflow-x-auto !px-2 pt-2 pb-4 hide-scrollbar">
         {papers.map((paper, idx) => (
           <PaperLibCard key={idx} paper={paper} onPaperChange={onPaperChange} />
         ))}

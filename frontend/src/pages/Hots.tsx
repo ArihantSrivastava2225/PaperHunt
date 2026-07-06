@@ -37,12 +37,12 @@ const Hots: React.FC = () => {
     }, []);
 
     return (
-        <div className="flex bg-gray-50 min-h-screen">
+        <div className="min-h-screen bg-gray-50">
             <SideBar />
 
-            <div className="flex-1 p-8 pl-24 overflow-y-auto w-full"> {/* Added pl-24 for sidebar offset */}
+            <div className="min-h-screen w-full overflow-y-auto px-4 pb-28 pt-8 sm:px-6 lg:py-8 lg:pl-72 lg:pr-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-8 flex justify-between items-center">
+                    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">🔥 Hots</h1>
                             <p className="text-gray-500 mt-1">Trending research news and highlights.</p>
@@ -59,7 +59,7 @@ const Hots: React.FC = () => {
                         ) : news.length === 0 ? (
                             <p className="text-gray-500">No news available at the moment.</p>
                         ) : (
-                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                                 {news.map((n, index) => (
                                     <a
                                         key={index}
