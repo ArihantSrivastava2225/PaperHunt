@@ -5,8 +5,10 @@ This guide deploys PaperHunt on one EC2 instance using ECR images and Docker Com
 ## Architecture
 
 - EC2 runs Docker.
-- `frontend` serves the React build through Nginx on port `80`.
-- `frontend` proxies `/api` to the Compose service named `backend-service`.
+- `caddy` is the public reverse proxy on ports `80` and `443`.
+- `caddy` automatically obtains and renews HTTPS certificates for your domain.
+- `frontend` serves the React build through Nginx inside the private Compose network.
+- `caddy` proxies `/api` to the Compose service named `backend-service`.
 - `backend-service` runs the Express API from the ECR backend image.
 - `redis` runs as a private container with a persistent Docker volume.
 - MongoDB should use MongoDB Atlas through `MONGO_URI`.
@@ -79,21 +81,24 @@ Copy `deploy/ec2/docker-compose.prod.yml` to this folder as:
 docker-compose.yml
 ```
 
-Create a server-only `.env` file from `deploy/ec2/env.example`.
-
-For the first HTTP smoke test, use:
+Copy `deploy/ec2/Caddyfile` to the same folder as:
 
 ```txt
-CLIENT_URL=http://your-ec2-public-ip
-COOKIE_SECURE=false
+Caddyfile
 ```
 
-After domain and HTTPS are configured, change them to:
+Create a server-only `.env` file from `deploy/ec2/env.example`.
+
+For production HTTPS, set:
 
 ```txt
+APP_DOMAIN=your-domain
+ACME_EMAIL=your-email@example.com
 CLIENT_URL=https://your-domain
 COOKIE_SECURE=true
 ```
+
+Before starting Caddy, create an `A` record in your DNS provider pointing the domain to the EC2 public IP or Elastic IP. Ports `80` and `443` must be open in the EC2 security group.
 
 ## Login To ECR
 
@@ -123,7 +128,7 @@ docker compose logs -f frontend
 Open:
 
 ```txt
-http://your-ec2-public-ip
+https://your-domain
 ```
 
 ## Update Deployment
