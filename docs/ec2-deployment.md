@@ -152,6 +152,20 @@ If your provider gives a full Redis connection string, use `REDIS_CONNECTION_URL
 REDIS_CONNECTION_URL=rediss://default:password@your-managed-redis-host:port
 ```
 
+Set SES SMTP values for the contact form:
+
+```txt
+SMTP_HOST=email-smtp.eu-north-1.amazonaws.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-ses-smtp-username
+SMTP_PASS=your-ses-smtp-password
+MAIL_FROM=PaperHunt <contact@paperhunt.in>
+CONTACT_RECEIVER_EMAIL=your-verified-receiver-email
+```
+
+`SMTP_USER` and `SMTP_PASS` are the SMTP credentials created from Amazon SES, not normal AWS access keys. While SES is in sandbox mode, `CONTACT_RECEIVER_EMAIL` must be verified in SES.
+
 Set monitoring values:
 
 ```txt

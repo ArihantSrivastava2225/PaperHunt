@@ -10,3 +10,6 @@ data:
   MONGO_URI: "mongodb://mongo-service:27017/paperhunt"
   REDIS_URL: "redis-service"
   REDIS_PORT: "6379"
+  SMTP_HOST: "email-smtp.eu-north-1.amazonaws.com"
+  SMTP_PORT: "587"
+  SMTP_SECURE: "false"
